@@ -1,6 +1,7 @@
 import type Bot from './Bot'
 import type { Board, CurrentBoardIndex, Position, Sign, SmallBoard } from '@/TicTacToe/types.ts'
 import { boardRowQuantity } from '@/TicTacToe/GameController.ts'
+import { getRandomElement } from '@/TicTacToe/utils.ts'
 
 export default class EasyBot implements Bot {
   public constructor(
@@ -11,21 +12,17 @@ export default class EasyBot implements Bot {
   public getMove(currentBoard: CurrentBoardIndex): Position {
     if (currentBoard === null) {
       const freeIndexes: number[] = this.getFreeBoardIndexes(this.winnerBoard)
-      currentBoard = this.getRandomElement<number>(freeIndexes)
+      currentBoard = getRandomElement<number>(freeIndexes)
     }
 
     const freeSmallBoardIndexes = this.getFreeBoardIndexes(this.board[currentBoard])
-    const randomIndex = this.getRandomElement<number>(freeSmallBoardIndexes)
+    const randomIndex = getRandomElement<number>(freeSmallBoardIndexes)
 
     return {
       smallBoard: currentBoard,
       row: Math.floor(randomIndex / 3),
       cell: randomIndex % 3,
     }
-  }
-
-  private getRandomElement<T>(array: Array<T>): T {
-    return array[(array.length * Math.random()) | 0]
   }
 
   private getFreeBoardIndexes(board: SmallBoard): number[] {
