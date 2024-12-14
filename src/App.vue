@@ -52,6 +52,7 @@ const playMove = (smallBoardIndex: number, row: number, col: number) => {
 
 const reset = () => {
   board = reactive(getDefaultBoard())
+  winBoard = reactive(getEmptySmallBoard())
   currentPlayer.value = 'X'
   gameOver.value = false
   winner.value = null
