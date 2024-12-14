@@ -1,4 +1,4 @@
-import { type Board, type Sign, type SmallBoard } from '@/TicTacToe/types'
+import { type Board, type CurrentBoardIndex, type Sign, type SmallBoard } from '@/TicTacToe/types'
 
 export const boardSize: number = 9
 export const boardRowQuantity: number = 3
@@ -38,7 +38,7 @@ export const isValidMove = (
   col: number,
   gameOver: boolean,
   board: Board,
-  currentBoard: number | null,
+  currentBoard: CurrentBoardIndex,
 ): boolean => {
   const freeCell = board[smallBoardIndex][row][col] === ''
   const validBoardIndex = currentBoard === null || smallBoardIndex === currentBoard
