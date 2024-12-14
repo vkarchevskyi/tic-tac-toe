@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Board } from '@/TicTacToe/types.ts'
 
-defineProps<{ board: Board }>()
+defineProps<{ board: Board; currentBoard: number | null }>()
 
 defineEmits<{
   playMove: [smallBoardIndex: number, rowIndex: number, cellIndex: number]
@@ -10,7 +10,14 @@ defineEmits<{
 
 <template>
   <div class="board-wrapper">
-    <div class="board" v-for="(smallBoard, smallBoardIndex) of board" :key="smallBoardIndex">
+    <div
+      class="board"
+      v-for="(smallBoard, smallBoardIndex) of board"
+      :key="smallBoardIndex"
+      :class="{
+        'current-board': currentBoard === smallBoardIndex || currentBoard === null,
+      }"
+    >
       <div class="row" v-for="(row, rowIndex) of smallBoard" :key="rowIndex">
         <div
           class="cell"
@@ -45,7 +52,6 @@ defineEmits<{
   width: 4rem;
   height: 4rem;
   font-size: 4rem;
-
   float: left;
   margin-right: -1px;
   margin-bottom: -1px;
@@ -75,12 +81,17 @@ defineEmits<{
 }
 
 .cell-x {
-  color: #f00;
+  color: #ff1493;
   cursor: not-allowed;
 }
 
 .cell-o {
-  color: #00f;
+  color: #1e90ff;
   cursor: not-allowed;
+}
+
+.current-board .cell {
+  border-color: white;
+  border-width: 2px;
 }
 </style>

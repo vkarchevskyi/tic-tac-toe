@@ -12,6 +12,11 @@ body {
   font-weight: normal;
 }
 
+h1 {
+  color: #ddd;
+  font-weight: 600;
+}
+
 a,
 .green {
   text-decoration: none;

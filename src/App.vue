@@ -57,11 +57,11 @@ const reset = () => {
 
 <template>
   <div>
-    <h1 class="">TicTac Game</h1>
-    <p class="">
+    <h1 class="">Ultimate Tic-Tac-Toe</h1>
+    <p class="current-player">
       Current Player: <span class=""> {{ currentPlayer }} </span>
     </p>
-    <GameField @playMove="playMove" :board="board"></GameField>
+    <GameField @playMove="playMove" :board="board" :current-board="currentBoard"></GameField>
 
     <div class="">
       <p v-if="winner">{{ winner }} wins!</p>
@@ -70,3 +70,17 @@ const reset = () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+h1 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.current-player {
+  text-align: center;
+  color: #ccc;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+</style>
