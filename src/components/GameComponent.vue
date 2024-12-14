@@ -8,32 +8,45 @@ import {
   getWinnerBoard,
   isValidMove,
 } from '@/TicTacToe/GameController'
-import { type Sign } from '@/TicTacToe/types'
+import {
+  type CurrentBoardIndex,
+  GameType,
+  MultiPlayerType,
+  type Position,
+  type Sign,
+  SinglePlayerType,
+} from '@/TicTacToe/types'
 import { reactive, ref } from 'vue'
 import GameField from '@/components/GameField.vue'
+import EasyBot from '@/TicTacToe/AI/EasyBot.ts'
+
+const props = defineProps<{
+  gameType: GameType
+  singlePlayerType: SinglePlayerType | null
+  multiPlayerType: MultiPlayerType | null
+}>()
 
 const winner = ref<string | null>(null)
 const isTie = ref<boolean>(false)
 const gameOver = ref<boolean>(false)
 const currentPlayer = ref<Sign>('X')
-
-const currentBoard = ref<number | null>(null)
+const currentBoard = ref<CurrentBoardIndex>(null)
 
 let board = reactive(getDefaultBoard())
 let winBoard = reactive(getEmptySmallBoard())
 
-const playMove = (smallBoardIndex: number, row: number, col: number) => {
+const playMove = (position: Position, botMove: boolean = false) => {
   const validMove = isValidMove(
-    smallBoardIndex,
-    row,
-    col,
+    position.smallBoard,
+    position.row,
+    position.cell,
     gameOver.value,
     board,
     currentBoard.value,
   )
 
   if (validMove) {
-    board[smallBoardIndex][row][col] = currentPlayer.value
+    board[position.smallBoard][position.row][position.cell] = currentPlayer.value
     winBoard = reactive(getWinnerBoard(board))
 
     if (checkWin(winBoard, currentPlayer.value)) {
@@ -46,7 +59,21 @@ const playMove = (smallBoardIndex: number, row: number, col: number) => {
       currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X'
     }
 
-    currentBoard.value = getNextBoardIndex(board, row, col)
+    currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
+
+    if (botMove) {
+      return;
+    }
+
+    switch (props.singlePlayerType) {
+      case SinglePlayerType.Easy:
+        playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), true)
+        break
+      case SinglePlayerType.Medium:
+        break
+      default:
+        break
+    }
   }
 }
 
