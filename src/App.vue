@@ -59,6 +59,7 @@ const multiPlayerType = ref<MultiPlayerType | null>(null)
       :game-type="gameType"
       :single-player-type="singlePlayerType"
       :multi-player-type="multiPlayerType"
+      :player="'X'"
     >
     </Game>
   </div>

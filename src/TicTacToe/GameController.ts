@@ -39,12 +39,15 @@ export const isValidMove = (
   gameOver: boolean,
   board: Board,
   currentBoard: CurrentBoardIndex,
+  currentPlayer: Sign,
+  player: Sign,
 ): boolean => {
   const freeCell = board[smallBoardIndex][row][col] === ''
   const validBoardIndex = currentBoard === null || smallBoardIndex === currentBoard
   const validBoard = canMoveToSmallBoard(board[smallBoardIndex])
+  const validPlayer = currentPlayer === player
 
-  return freeCell && validBoardIndex && validBoard && !gameOver
+  return freeCell && validBoardIndex && validBoard && validPlayer && !gameOver
 }
 
 export const checkTie = (board: Board): boolean => {

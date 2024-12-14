@@ -24,18 +24,20 @@ const props = defineProps<{
   gameType: GameType
   singlePlayerType: SinglePlayerType | null
   multiPlayerType: MultiPlayerType | null
+  player: Sign
 }>()
 
 const winner = ref<string | null>(null)
 const isTie = ref<boolean>(false)
 const gameOver = ref<boolean>(false)
+
 const currentPlayer = ref<Sign>('X')
 const currentBoard = ref<CurrentBoardIndex>(null)
 
 let board = reactive(getDefaultBoard())
 let winBoard = reactive(getEmptySmallBoard())
 
-const playMove = (position: Position, botMove: boolean = false) => {
+const playMove = (position: Position, player: Sign) => {
   const validMove = isValidMove(
     position.smallBoard,
     position.row,
@@ -43,6 +45,8 @@ const playMove = (position: Position, botMove: boolean = false) => {
     gameOver.value,
     board,
     currentBoard.value,
+    currentPlayer.value,
+    player,
   )
 
   if (validMove) {
@@ -61,19 +65,21 @@ const playMove = (position: Position, botMove: boolean = false) => {
 
     currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
 
-    if (botMove) {
-      return;
+    if (props.singlePlayerType) {
+      makeBotMove()
     }
+  }
+}
 
-    switch (props.singlePlayerType) {
-      case SinglePlayerType.Easy:
-        playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), true)
-        break
-      case SinglePlayerType.Medium:
-        break
-      default:
-        break
-    }
+const makeBotMove = (): void => {
+  switch (props.singlePlayerType) {
+    case SinglePlayerType.Easy:
+      playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), 'O')
+      break
+    case SinglePlayerType.Medium:
+      break
+    default:
+      break
   }
 }
 
@@ -98,6 +104,7 @@ const reset = () => {
       :current-board="currentBoard"
       :win-board="winBoard"
       :game-over="gameOver"
+      :player="player"
       @playMove="playMove"
     ></GameField>
 
