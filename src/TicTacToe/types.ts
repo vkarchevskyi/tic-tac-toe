@@ -5,6 +5,8 @@ export type SmallBoard = Sign[][]
 export type CurrentBoardIndex = number | null
 export type Position = { smallBoard: number; row: number; cell: number }
 
+export type MiniMaxMove = { index?: number; score: number }
+
 export enum GameType {
   SinglePlayer,
   MultiPlayer,
