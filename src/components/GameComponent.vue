@@ -37,7 +37,7 @@ const currentBoard = ref<CurrentBoardIndex>(null)
 let board = reactive(getDefaultBoard())
 let winBoard = reactive(getEmptySmallBoard())
 
-const playMove = (position: Position, player: Sign) => {
+const playMove = async (position: Position, player: Sign): Promise<void> => {
   const validMove = isValidMove(
     position.smallBoard,
     position.row,
@@ -63,23 +63,24 @@ const playMove = (position: Position, player: Sign) => {
 
     if (winner.value !== null || isTie.value) {
       gameOver.value = true
-      return;
+      return
     }
 
     currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
 
     if (props.singlePlayerType !== null) {
-      makeBotMove()
+      await makeBotMove()
     }
   }
 }
 
-const makeBotMove = (): void => {
+const makeBotMove = async (): Promise<void> => {
   switch (props.singlePlayerType) {
     case SinglePlayerType.Easy:
-      playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), 'O')
+      await playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), 'O')
       break
     case SinglePlayerType.Medium:
+      await playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), 'O')
       break
     default:
       break
