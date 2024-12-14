@@ -1,74 +1,66 @@
 <script setup lang="ts">
-import {
-  checkTie,
-  checkWin,
-  getDefaultBoard,
-  getNextBoardIndex,
-  isValidMove,
-} from '@/TicTacToe/GameController'
-import { type Sign } from '@/TicTacToe/types'
-import { reactive, ref } from 'vue'
-import GameField from '@/components/GameField.vue'
+import Game from '@/components/GameComponent.vue'
+import { GameType, MultiPlayerType, SinglePlayerType } from '@/TicTacToe/types.ts'
+import { ref } from 'vue'
+import DynamicButton from '@/components/DynamicButton.vue'
 
-const winner = ref<string | null>(null)
-const isTie = ref<boolean>(false)
-const gameOver = ref<boolean>(false)
-const currentPlayer = ref<Sign>('X')
-
-const currentBoard = ref<number | null>(null)
-
-let board = reactive(getDefaultBoard())
-
-const playMove = (smallBoardIndex: number, row: number, col: number) => {
-  const validMove = isValidMove(
-    smallBoardIndex,
-    row,
-    col,
-    gameOver.value,
-    board,
-    currentBoard.value,
-  )
-
-  if (validMove) {
-    board[smallBoardIndex][row][col] = currentPlayer.value
-
-    if (checkWin(board, currentPlayer.value)) {
-      winner.value = currentPlayer.value
-      gameOver.value = true
-    } else if (checkTie(board)) {
-      isTie.value = true
-      gameOver.value = true
-    } else {
-      currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X'
-    }
-
-    currentBoard.value = getNextBoardIndex(board, row, col)
-  }
-}
-
-const reset = () => {
-  board = reactive(getDefaultBoard())
-  currentPlayer.value = 'X'
-  gameOver.value = false
-  winner.value = null
-  isTie.value = false
-  currentBoard.value = null
-}
+const gameType = ref<GameType>()
+const singlePlayerType = ref<SinglePlayerType | null>(null)
+const multiPlayerType = ref<MultiPlayerType | null>(null)
 </script>
 
 <template>
-  <div>
+  <div class="wrapper">
     <h1 class="">Ultimate Tic-Tac-Toe</h1>
-    <p class="current-player">
-      Current Player: <span class=""> {{ currentPlayer }} </span>
-    </p>
-    <GameField @playMove="playMove" :board="board" :current-board="currentBoard"></GameField>
 
-    <div class="">
-      <p v-if="winner">{{ winner }} wins!</p>
-      <p v-else-if="isTie">It's a tie!</p>
-      <button @click="reset">Reset Game</button>
+    <div class="game-type" v-if="gameType === undefined">
+      <DynamicButton @click="gameType = GameType.SinglePlayer" :with-dynamic-border="true">
+        Singleplayer
+      </DynamicButton>
+      <DynamicButton @click="gameType = GameType.MultiPlayer" :with-dynamic-border="true">
+        Multiplayer
+      </DynamicButton>
     </div>
+
+    <div
+      class="game-type"
+      v-if="
+        gameType === GameType.SinglePlayer && singlePlayerType === null && multiPlayerType === null
+      "
+    >
+      <DynamicButton @click="singlePlayerType = SinglePlayerType.Easy" :with-dynamic-border="false">
+        AI Easy
+      </DynamicButton>
+      <DynamicButton
+        @click="singlePlayerType = SinglePlayerType.Medium"
+        :with-dynamic-border="false"
+      >
+        AI Medium
+      </DynamicButton>
+    </div>
+
+    <div
+      class="game-type"
+      v-if="
+        gameType === GameType.MultiPlayer && singlePlayerType === null && multiPlayerType === null
+      "
+    >
+      <DynamicButton
+        @click="multiPlayerType = MultiPlayerType.Local"
+        :with-dynamic-border="false"
+        :class="'full-width-button'"
+      >
+        Local
+      </DynamicButton>
+    </div>
+
+    <Game
+      v-if="gameType !== undefined && (singlePlayerType !== null || multiPlayerType !== null)"
+      :game-type="gameType"
+      :single-player-type="singlePlayerType"
+      :multi-player-type="multiPlayerType"
+    >
+    </Game>
   </div>
 </template>
 
@@ -78,10 +70,15 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
-.current-player {
-  text-align: center;
-  color: #ccc;
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+.game-type {
+  display: flex;
+  column-gap: 1rem;
+  justify-content: space-between;
+}
+
+.full-width-button {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 </style>

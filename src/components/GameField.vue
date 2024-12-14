@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import type { Board } from '@/TicTacToe/types.ts'
+import type { Board, Position, SmallBoard } from '@/TicTacToe/types.ts'
 
-defineProps<{ board: Board; currentBoard: number | null }>()
+defineProps<{
+  board: Board
+  currentBoard: number | null
+  winBoard: SmallBoard
+  gameOver: boolean
+}>()
 
 defineEmits<{
-  playMove: [smallBoardIndex: number, rowIndex: number, cellIndex: number]
+  playMove: [position: Position]
 }>()
 </script>
 
@@ -15,7 +20,9 @@ defineEmits<{
       v-for="(smallBoard, smallBoardIndex) of board"
       :key="smallBoardIndex"
       :class="{
-        'current-board': currentBoard === smallBoardIndex || currentBoard === null,
+        'current-board': (currentBoard === smallBoardIndex || currentBoard === null) && !gameOver,
+        'x-wins': winBoard[Math.floor(smallBoardIndex / 3)][smallBoardIndex % 3] === 'X',
+        'o-wins': winBoard[Math.floor(smallBoardIndex / 3)][smallBoardIndex % 3] === 'O',
       }"
     >
       <div class="row" v-for="(row, rowIndex) of smallBoard" :key="rowIndex">
@@ -27,7 +34,13 @@ defineEmits<{
             'cell-x': cell === 'X',
             'cell-o': cell === 'O',
           }"
-          @click="$emit('playMove', smallBoardIndex, rowIndex, cellIndex)"
+          @click="
+            $emit('playMove', {
+              smallBoard: smallBoardIndex,
+              row: rowIndex,
+              cell: cellIndex,
+            })
+          "
         >
           {{ cell }}
         </div>
@@ -81,17 +94,25 @@ defineEmits<{
 }
 
 .cell-x {
-  color: #ff1493;
+  color: var(--x-color);
   cursor: not-allowed;
 }
 
 .cell-o {
-  color: #1e90ff;
+  color: var(--o-color);
   cursor: not-allowed;
 }
 
 .current-board .cell {
   border-color: white;
   border-width: 2px;
+}
+
+.x-wins .cell {
+  border-color: var(--x-color);
+}
+
+.o-wins .cell {
+  border-color: var(--o-color);
 }
 </style>
