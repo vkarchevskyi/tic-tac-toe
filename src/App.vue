@@ -47,11 +47,12 @@ const playMove = (smallBoardIndex: number, row: number, col: number) => {
 }
 
 const reset = () => {
-  board = getDefaultBoard()
+  board = reactive(getDefaultBoard())
   currentPlayer.value = 'X'
   gameOver.value = false
   winner.value = null
   isTie.value = false
+  currentBoard.value = null
 }
 </script>
 
