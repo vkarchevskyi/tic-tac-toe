@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Board, SmallBoard } from '@/TicTacToe/types.ts'
+import type { Board, Position, SmallBoard } from '@/TicTacToe/types.ts'
 
 defineProps<{
   board: Board
@@ -9,7 +9,7 @@ defineProps<{
 }>()
 
 defineEmits<{
-  playMove: [smallBoardIndex: number, rowIndex: number, cellIndex: number]
+  playMove: [position: Position]
 }>()
 </script>
 
@@ -34,7 +34,13 @@ defineEmits<{
             'cell-x': cell === 'X',
             'cell-o': cell === 'O',
           }"
-          @click="$emit('playMove', smallBoardIndex, rowIndex, cellIndex)"
+          @click="
+            $emit('playMove', {
+              smallBoard: smallBoardIndex,
+              row: rowIndex,
+              cell: cellIndex,
+            })
+          "
         >
           {{ cell }}
         </div>
