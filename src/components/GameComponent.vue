@@ -55,12 +55,15 @@ const playMove = (position: Position, player: Sign) => {
 
     if (checkWin(winBoard, currentPlayer.value)) {
       winner.value = currentPlayer.value
-      gameOver.value = true
     } else if (checkTie(board)) {
       isTie.value = true
-      gameOver.value = true
     } else {
       currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X'
+    }
+
+    if (winner.value !== null || isTie.value) {
+      gameOver.value = true
+      return;
     }
 
     currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
