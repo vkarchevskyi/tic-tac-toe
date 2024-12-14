@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import type { Board, Position, SmallBoard } from '@/TicTacToe/types.ts'
+import type { Board, Position, Sign, SmallBoard } from '@/TicTacToe/types.ts'
 
 defineProps<{
   board: Board
   currentBoard: number | null
   winBoard: SmallBoard
   gameOver: boolean
+  player: Sign
 }>()
 
 defineEmits<{
-  playMove: [position: Position]
+  playMove: [position: Position, player: Sign]
 }>()
 </script>
 
@@ -35,11 +36,15 @@ defineEmits<{
             'cell-o': cell === 'O',
           }"
           @click="
-            $emit('playMove', {
-              smallBoard: smallBoardIndex,
-              row: rowIndex,
-              cell: cellIndex,
-            })
+            $emit(
+              'playMove',
+              {
+                smallBoard: smallBoardIndex,
+                row: rowIndex,
+                cell: cellIndex,
+              },
+              player,
+            )
           "
         >
           {{ cell }}

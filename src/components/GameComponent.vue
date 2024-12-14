@@ -19,23 +19,26 @@ import {
 import { reactive, ref } from 'vue'
 import GameField from '@/components/GameField.vue'
 import EasyBot from '@/TicTacToe/AI/EasyBot.ts'
+import MediumBot from '@/TicTacToe/AI/MediumBot.ts'
 
 const props = defineProps<{
   gameType: GameType
   singlePlayerType: SinglePlayerType | null
   multiPlayerType: MultiPlayerType | null
+  player: Sign
 }>()
 
 const winner = ref<string | null>(null)
 const isTie = ref<boolean>(false)
 const gameOver = ref<boolean>(false)
+
 const currentPlayer = ref<Sign>('X')
 const currentBoard = ref<CurrentBoardIndex>(null)
 
 let board = reactive(getDefaultBoard())
 let winBoard = reactive(getEmptySmallBoard())
 
-const playMove = (position: Position, botMove: boolean = false) => {
+const playMove = async (position: Position, player: Sign): Promise<void> => {
   const validMove = isValidMove(
     position.smallBoard,
     position.row,
@@ -43,6 +46,8 @@ const playMove = (position: Position, botMove: boolean = false) => {
     gameOver.value,
     board,
     currentBoard.value,
+    currentPlayer.value,
+    player,
   )
 
   if (validMove) {
@@ -51,29 +56,35 @@ const playMove = (position: Position, botMove: boolean = false) => {
 
     if (checkWin(winBoard, currentPlayer.value)) {
       winner.value = currentPlayer.value
-      gameOver.value = true
     } else if (checkTie(board)) {
       isTie.value = true
-      gameOver.value = true
     } else {
       currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X'
     }
 
+    if (winner.value !== null || isTie.value) {
+      gameOver.value = true
+      return
+    }
+
     currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
 
-    if (botMove) {
-      return;
+    if (props.singlePlayerType !== null) {
+      setTimeout(makeBotMove, 0);
     }
+  }
+}
 
-    switch (props.singlePlayerType) {
-      case SinglePlayerType.Easy:
-        playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), true)
-        break
-      case SinglePlayerType.Medium:
-        break
-      default:
-        break
-    }
+const makeBotMove = async (): Promise<void> => {
+  switch (props.singlePlayerType) {
+    case SinglePlayerType.Easy:
+      await playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), 'O')
+      break
+    case SinglePlayerType.Medium:
+      await playMove(new MediumBot(board, winBoard).getMove(currentBoard.value), 'O')
+      break
+    default:
+      break
   }
 }
 
@@ -98,6 +109,7 @@ const reset = () => {
       :current-board="currentBoard"
       :win-board="winBoard"
       :game-over="gameOver"
+      :player="player"
       @playMove="playMove"
     ></GameField>
 
