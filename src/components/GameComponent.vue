@@ -19,6 +19,7 @@ import {
 import { reactive, ref } from 'vue'
 import GameField from '@/components/GameField.vue'
 import EasyBot from '@/TicTacToe/AI/EasyBot.ts'
+import MediumBot from '@/TicTacToe/AI/MediumBot.ts'
 
 const props = defineProps<{
   gameType: GameType
@@ -69,7 +70,7 @@ const playMove = async (position: Position, player: Sign): Promise<void> => {
     currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
 
     if (props.singlePlayerType !== null) {
-      await makeBotMove()
+      setTimeout(makeBotMove, 0);
     }
   }
 }
@@ -80,7 +81,7 @@ const makeBotMove = async (): Promise<void> => {
       await playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), 'O')
       break
     case SinglePlayerType.Medium:
-      await playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), 'O')
+      await playMove(new MediumBot(board, winBoard).getMove(currentBoard.value), 'O')
       break
     default:
       break
