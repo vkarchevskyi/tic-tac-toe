@@ -20,7 +20,6 @@ defineEmits<{
             'cell-x': cell === 'X',
             'cell-o': cell === 'O',
           }"
-          :disabled="cell !== null"
           @click="$emit('playMove', smallBoardIndex, rowIndex, cellIndex)"
         >
           {{ cell }}
@@ -33,8 +32,9 @@ defineEmits<{
 <style scoped>
 .board-wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
+  width: 100%;
 }
 
 .row {
@@ -42,33 +42,45 @@ defineEmits<{
 }
 
 .cell {
-  width: 50px;
-  height: 50px;
+  width: 4rem;
+  height: 4rem;
+  font-size: 4rem;
+
   float: left;
   margin-right: -1px;
   margin-bottom: -1px;
-  line-height: 50px;
-  text-align: center;
-  border: 1px solid #bbb;
+  border: 1px solid #ccc;
   cursor: pointer;
-  font-size: 40px;
+  flex-shrink: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: inherit;
+}
+
+@media screen and (max-width: 667px) {
+  .cell {
+    width: 9vw;
+    height: 9vw;
+    font-size: 9vw;
+  }
+}
+
+@media screen and (max-width: 376px) {
+  .cell {
+    width: 8vw;
+    height: 8vw;
+    font-size: 8vw;
+  }
 }
 
 .cell-x {
   color: #f00;
+  cursor: not-allowed;
 }
 
 .cell-o {
   color: #00f;
-}
-
-button {
-  margin-top: 20px;
-  font-size: 16px;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #ccc;
-  border: none;
-  cursor: pointer;
+  cursor: not-allowed;
 }
 </style>
