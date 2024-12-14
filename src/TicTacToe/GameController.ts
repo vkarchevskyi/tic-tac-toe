@@ -3,16 +3,19 @@ import { type Board, type Sign, type SmallBoard } from '@/TicTacToe/types'
 export const boardSize: number = 9
 export const boardRowQuantity: number = 3
 
+export const getEmptySmallBoard = (): SmallBoard => {
+  return [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ]
+}
+
 export const getDefaultBoard = (): Sign[][][] => {
   const board: Board = []
 
   for (let i = 0; i < boardSize; i++) {
-    const smallBoard: SmallBoard = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', ''],
-    ]
-
+    const smallBoard: SmallBoard = getEmptySmallBoard()
     board.push(smallBoard)
   }
 
@@ -57,21 +60,33 @@ export const checkTie = (board: Board): boolean => {
   return true
 }
 
-export const checkWin = (board: Board, player: Sign): boolean => {
-  const winBoard = [
-    [false, false, false],
-    [false, false, false],
-    [false, false, false],
-  ]
+export const getWinnerBoard = (board: Board): SmallBoard => {
+  const winBoard: SmallBoard = getEmptySmallBoard()
 
   for (let i = 0; i < board.length; i++) {
     const x = i % 3
     const y = Math.floor(i / 3)
 
-    winBoard[y][x] = checkSmallBoardWin(board[i], player)
+    if (checkSmallBoardWin(board[i], 'X')) {
+      winBoard[y][x] = 'X'
+    } else if (checkSmallBoardWin(board[i], 'O')) {
+      winBoard[y][x] = 'O'
+    }
   }
 
-  return checkBoardWin(winBoard)
+  return winBoard
+}
+
+export const checkWin = (winBoard: SmallBoard, player: Sign): boolean => {
+  for (let i = 0; i < boardRowQuantity; i++) {
+    if (winBoard[i].every((cell): boolean => cell === player)) return true
+    if (winBoard.every((row): boolean => row[i] === player)) return true
+  }
+
+  return (
+    (winBoard[0][2] === player && winBoard[1][1] === player && winBoard[2][0] === player) ||
+    (winBoard[0][0] === player && winBoard[1][1] === player && winBoard[2][2] === player)
+  )
 }
 
 const checkSmallBoardWin = (board: SmallBoard, player: Sign): boolean => {
@@ -83,18 +98,6 @@ const checkSmallBoardWin = (board: SmallBoard, player: Sign): boolean => {
   return (
     (board[0][2] === player && board[1][1] === player && board[2][0] === player) ||
     (board[0][0] === player && board[1][1] === player && board[2][2] === player)
-  )
-}
-
-const checkBoardWin = (winBoard: boolean[][]): boolean => {
-  for (let i = 0; i < boardRowQuantity; i++) {
-    if (winBoard[i].every((cell): boolean => cell)) return true
-    if (winBoard.every((row): boolean => row[i])) return true
-  }
-
-  return (
-    (winBoard[0][2] && winBoard[1][1] && winBoard[2][0]) ||
-    (winBoard[0][0] && winBoard[1][1] && winBoard[2][2])
   )
 }
 

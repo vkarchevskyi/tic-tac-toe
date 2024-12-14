@@ -3,7 +3,9 @@ import {
   checkTie,
   checkWin,
   getDefaultBoard,
+  getEmptySmallBoard,
   getNextBoardIndex,
+  getWinnerBoard,
   isValidMove,
 } from '@/TicTacToe/GameController'
 import { type Sign } from '@/TicTacToe/types'
@@ -18,6 +20,7 @@ const currentPlayer = ref<Sign>('X')
 const currentBoard = ref<number | null>(null)
 
 let board = reactive(getDefaultBoard())
+let winBoard = reactive(getEmptySmallBoard())
 
 const playMove = (smallBoardIndex: number, row: number, col: number) => {
   const validMove = isValidMove(
@@ -31,8 +34,9 @@ const playMove = (smallBoardIndex: number, row: number, col: number) => {
 
   if (validMove) {
     board[smallBoardIndex][row][col] = currentPlayer.value
+    winBoard = reactive(getWinnerBoard(board))
 
-    if (checkWin(board, currentPlayer.value)) {
+    if (checkWin(winBoard, currentPlayer.value)) {
       winner.value = currentPlayer.value
       gameOver.value = true
     } else if (checkTie(board)) {
@@ -62,7 +66,13 @@ const reset = () => {
     <p class="current-player">
       Current Player: <span class=""> {{ currentPlayer }} </span>
     </p>
-    <GameField @playMove="playMove" :board="board" :current-board="currentBoard"></GameField>
+    <GameField
+      :board="board"
+      :current-board="currentBoard"
+      :win-board="winBoard"
+      :game-over="gameOver"
+      @playMove="playMove"
+    ></GameField>
 
     <div class="">
       <p v-if="winner">{{ winner }} wins!</p>
