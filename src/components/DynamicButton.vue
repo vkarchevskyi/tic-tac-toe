@@ -1,8 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineProps<{ withDynamicBorder: boolean }>()
+</script>
 
 <template>
   <button class="button">
-    <span class="dots-border"></span>
+    <span class="dynamic-border" v-show="withDynamicBorder"></span>
     <span class="text-button"><slot></slot></span>
   </button>
 </template>
@@ -79,7 +81,7 @@
   transform: scale(1);
 }
 
-.button .dots-border {
+.button .dynamic-border {
   --size_border: calc(100% + 2px);
 
   overflow: hidden;
@@ -97,7 +99,7 @@
   z-index: -10;
 }
 
-.button .dots-border::before {
+.button .dynamic-border::before {
   content: '';
   position: absolute;
   top: 30%;
