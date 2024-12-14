@@ -65,7 +65,7 @@ const playMove = (position: Position, player: Sign) => {
 
     currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
 
-    if (props.singlePlayerType) {
+    if (props.singlePlayerType !== null) {
       makeBotMove()
     }
   }
