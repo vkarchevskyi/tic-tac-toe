@@ -23,9 +23,9 @@ import MediumBot from '@/TicTacToe/AI/MediumBot.ts'
 
 const props = defineProps<{
   gameType: GameType
-  singlePlayerType: SinglePlayerType | null
-  multiPlayerType: MultiPlayerType | null
   player: Sign
+  singlePlayerType?: SinglePlayerType
+  multiPlayerType?: MultiPlayerType
 }>()
 
 const winner = ref<string | null>(null)
@@ -69,7 +69,7 @@ const playMove = (position: Position, player: Sign) => {
 
     currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
 
-    if (currentPlayer.value === 'O' && props.singlePlayerType !== null) {
+    if (currentPlayer.value === 'O' && props.singlePlayerType !== undefined) {
       setTimeout(() => {
         playMove(getBotMove(), 'O')
       }, 200)
