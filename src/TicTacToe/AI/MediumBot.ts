@@ -17,7 +17,7 @@ export default class MediumBot implements Bot {
   ) {}
 
   public getMove(currentBoard: CurrentBoardIndex): Position {
-    if (currentBoard === null) {
+    while (currentBoard === null || isNaN(currentBoard)) {
       const freeIndexes: number[] = getEmptyCellIndexes(this.winnerBoard)
       currentBoard = getRandomElement<number>(freeIndexes)
     }
@@ -43,6 +43,7 @@ export default class MediumBot implements Bot {
    * Inspired by:
    * @see https://github.com/andersonpereiradossantos/tic-tac-toe-ai-minimax
    * @see https://gist.github.com/Pragalbha-Patil/8f09d11cf09ad249767da0df8649f459
+   * @see https://www.youtube.com/watch?v=5y2a0Zhgq0U
    * */
   private miniMax(board: SmallBoard, player: Sign, depth: number): MiniMaxMove {
     const empty = getEmptyCellIndexes(board)

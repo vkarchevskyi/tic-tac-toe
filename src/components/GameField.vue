@@ -7,6 +7,7 @@ defineProps<{
   winBoard: SmallBoard
   gameOver: boolean
   player: Sign
+  currentPlayer: Sign
 }>()
 
 defineEmits<{
@@ -21,7 +22,10 @@ defineEmits<{
       v-for="(smallBoard, smallBoardIndex) of board"
       :key="smallBoardIndex"
       :class="{
-        'current-board': (currentBoard === smallBoardIndex || currentBoard === null) && !gameOver,
+        'current-board':
+          (currentBoard === smallBoardIndex || currentBoard === null) &&
+          !gameOver &&
+          player === currentPlayer,
         'x-wins': winBoard[Math.floor(smallBoardIndex / 3)][smallBoardIndex % 3] === 'X',
         'o-wins': winBoard[Math.floor(smallBoardIndex / 3)][smallBoardIndex % 3] === 'O',
       }"

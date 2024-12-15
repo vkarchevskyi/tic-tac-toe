@@ -9,6 +9,7 @@ import {
   isValidMove,
 } from '@/TicTacToe/GameController'
 import {
+  type Board,
   type CurrentBoardIndex,
   GameType,
   MultiPlayerType,
@@ -23,9 +24,15 @@ import MediumBot from '@/TicTacToe/AI/MediumBot.ts'
 
 const props = defineProps<{
   gameType: GameType
-  singlePlayerType: SinglePlayerType | null
-  multiPlayerType: MultiPlayerType | null
   player: Sign
+  singlePlayerType?: SinglePlayerType
+  multiPlayerType?: MultiPlayerType
+}>()
+
+const emit = defineEmits<{
+  changePlayer: []
+  makeMove: [position: Position]
+  restartGame: []
 }>()
 
 const winner = ref<string | null>(null)
@@ -37,6 +44,23 @@ const currentBoard = ref<CurrentBoardIndex>(null)
 
 let board = reactive(getDefaultBoard())
 let winBoard = reactive(getEmptySmallBoard())
+
+const setData = (args: {
+  board: Board
+  currentPlayer: Sign
+  currentBoard: CurrentBoardIndex
+  winner: string | null
+  isTie: boolean
+  gameOver: boolean
+}) => {
+  currentBoard.value = args.currentBoard
+  board = reactive(args.board)
+  currentPlayer.value = args.currentPlayer
+  winner.value = args.winner
+  isTie.value = args.isTie
+  gameOver.value = args.gameOver
+  winBoard = reactive(getWinnerBoard(board))
+}
 
 const playMove = (position: Position, player: Sign) => {
   const validMove = isValidMove(
@@ -56,7 +80,7 @@ const playMove = (position: Position, player: Sign) => {
 
     if (checkWin(winBoard, currentPlayer.value)) {
       winner.value = currentPlayer.value
-    } else if (checkTie(board)) {
+    } else if (checkTie(winBoard)) {
       isTie.value = true
     } else {
       currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X'
@@ -64,15 +88,25 @@ const playMove = (position: Position, player: Sign) => {
 
     if (winner.value !== null || isTie.value) {
       gameOver.value = true
-      return
     }
 
-    currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
+    if (props.multiPlayerType === MultiPlayerType.Online) {
+      emit('makeMove', position)
+    }
 
-    if (currentPlayer.value === 'O' && props.singlePlayerType !== null) {
-      setTimeout(() => {
-        playMove(getBotMove(), 'O')
-      }, 200)
+    if (!gameOver.value) {
+      if (currentPlayer.value === 'O' && props.singlePlayerType !== undefined) {
+        setTimeout(() => {
+          updateCurrentBoard(position)
+          playMove(getBotMove(), 'O')
+        }, 200)
+      } else {
+        updateCurrentBoard(position)
+      }
+
+      if (props.multiPlayerType === MultiPlayerType.Local) {
+        emit('changePlayer')
+      }
     }
   }
 }
@@ -88,7 +122,15 @@ const getBotMove = (): Position => {
   }
 }
 
+const updateCurrentBoard = (position: Position): void => {
+  currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
+}
+
 const reset = () => {
+  if (props.multiPlayerType === MultiPlayerType.Online && !gameOver.value) {
+    return
+  }
+
   board = reactive(getDefaultBoard())
   winBoard = reactive(getEmptySmallBoard())
   currentPlayer.value = 'X'
@@ -96,7 +138,11 @@ const reset = () => {
   winner.value = null
   isTie.value = false
   currentBoard.value = null
+
+  emit('restartGame')
 }
+
+defineExpose({ setData })
 </script>
 
 <template>
@@ -110,6 +156,7 @@ const reset = () => {
       :win-board="winBoard"
       :game-over="gameOver"
       :player="player"
+      :current-player="currentPlayer"
       @playMove="playMove"
     ></GameField>
 
