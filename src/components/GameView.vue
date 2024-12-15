@@ -9,6 +9,7 @@ import {
   isValidMove,
 } from '@/TicTacToe/GameController'
 import {
+  type Board,
   type CurrentBoardIndex,
   GameType,
   MultiPlayerType,
@@ -30,6 +31,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   changePlayer: []
+  makeMove: [position: Position]
 }>()
 
 const winner = ref<string | null>(null)
@@ -41,6 +43,24 @@ const currentBoard = ref<CurrentBoardIndex>(null)
 
 let board = reactive(getDefaultBoard())
 let winBoard = reactive(getEmptySmallBoard())
+
+const setData = (args: {
+  board: Board
+  currentPlayer: Sign
+  currentBoard: CurrentBoardIndex
+  winner: string | null
+  isTie: boolean
+  gameOver: boolean
+}) => {
+  console.log(args)
+
+  currentBoard.value = args.currentBoard
+  board = reactive(args.board)
+  currentPlayer.value = args.currentPlayer
+  winner.value = args.winner
+  isTie.value = args.isTie
+  gameOver.value = args.gameOver
+}
 
 const playMove = (position: Position, player: Sign) => {
   const validMove = isValidMove(
@@ -68,20 +88,25 @@ const playMove = (position: Position, player: Sign) => {
 
     if (winner.value !== null || isTie.value) {
       gameOver.value = true
-      return
     }
 
-    if (currentPlayer.value === 'O' && props.singlePlayerType !== undefined) {
-      setTimeout(() => {
+    if (props.multiPlayerType === MultiPlayerType.Online) {
+      emit('makeMove', position)
+    }
+
+    if (!gameOver.value) {
+      if (currentPlayer.value === 'O' && props.singlePlayerType !== undefined) {
+        setTimeout(() => {
+          updateCurrentBoard(position)
+          playMove(getBotMove(), 'O')
+        }, 200)
+      } else {
         updateCurrentBoard(position)
-        playMove(getBotMove(), 'O')
-      }, 200)
-    } else {
-      updateCurrentBoard(position)
-    }
+      }
 
-    if (props.multiPlayerType === MultiPlayerType.Local) {
-      emit('changePlayer')
+      if (props.multiPlayerType === MultiPlayerType.Local) {
+        emit('changePlayer')
+      }
     }
   }
 }
@@ -110,6 +135,8 @@ const reset = () => {
   isTie.value = false
   currentBoard.value = null
 }
+
+defineExpose({ setData })
 </script>
 
 <template>
