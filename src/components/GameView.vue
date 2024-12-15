@@ -164,7 +164,12 @@ defineExpose({ setData })
     <div class="results">
       <p v-if="winner">{{ winner }} wins!</p>
       <p v-else-if="isTie">It's a tie!</p>
-      <FillingButton @click.prevent="reset">Reset Game</FillingButton>
+      <FillingButton
+        @click.prevent="reset"
+        v-show="props.multiPlayerType !== MultiPlayerType.Online || gameOver"
+      >
+        Reset Game
+      </FillingButton>
     </div>
   </div>
 </template>
