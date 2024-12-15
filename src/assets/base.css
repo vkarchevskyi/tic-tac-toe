@@ -33,6 +33,8 @@
   --color-heading: var(--vt-c-text-dark-1);
   --color-text: var(--vt-c-text-dark-2);
 
+  color-scheme: light dark;
+
   --x-color: #ff1493;
   --o-color: #1e90ff;
 

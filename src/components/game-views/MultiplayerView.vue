@@ -10,6 +10,7 @@ import {
   type Sign,
 } from '@/TicTacToe/types.ts'
 import GameView from '@/components/GameView.vue'
+import FillingButton from '@/components/shared/FillingButton.vue'
 
 type SocketResponse = {
   roomCode: string
@@ -21,10 +22,11 @@ type SocketResponse = {
   gameOver: boolean
 }
 
+// https://stackoverflow.com/questions/73017353/how-to-bypass-ngrok-browser-warning
 const socket = io('https://musical-sincere-mako.ngrok-free.app', {
   extraHeaders: {
-    "ngrok-skip-browser-warning": "69420",
-  }
+    'ngrok-skip-browser-warning': '69420',
+  },
 })
 
 const personalRoomCode = ref<string>('')
@@ -97,14 +99,48 @@ const restartGame = () => {
     ></GameView>
   </div>
   <div v-else>
-    <p>Personal room code: {{ personalRoomCode }}</p>
+    <p>
+      Your room code:
+      <code>{{ personalRoomCode }}</code>
+    </p>
 
     <label for="">
-      Room code
-      <input type="text" v-model="inputRoomCode" />
-      <button @click="joinTheRoom">Join</button>
+      Your buddy room code:<br />
+      <input type="text" v-model="inputRoomCode" /><br />
     </label>
+    <FillingButton @click="joinTheRoom" class="button">Join</FillingButton>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+code {
+  font-size: 1.25rem;
+}
+
+p {
+  text-align: center;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+label {
+  font-size: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+label input {
+  font-size: 1.25rem;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  font-size: 1.125rem;
+  margin-top: 1.5rem;
+}
+</style>
