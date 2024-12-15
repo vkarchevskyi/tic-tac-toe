@@ -7,8 +7,8 @@ import type {
   Sign,
   SmallBoard,
 } from '@/TicTacToe/types.ts'
-import { checkWin } from '@/TicTacToe/GameController.ts'
-import { getRandomElement, min, max, getEmptyCellIndexes } from '@/TicTacToe/utils.ts'
+import { boardSize, checkWin } from '@/TicTacToe/GameController.ts'
+import { getRandomElement, getEmptyCellIndexes } from '@/TicTacToe/utils.ts'
 
 export default class MediumBot implements Bot {
   public constructor(
@@ -42,10 +42,14 @@ export default class MediumBot implements Bot {
   /**
    * Inspired by:
    * @see https://github.com/andersonpereiradossantos/tic-tac-toe-ai-minimax
+   * @see https://gist.github.com/Pragalbha-Patil/8f09d11cf09ad249767da0df8649f459
    * */
   private miniMax(board: SmallBoard, player: Sign, depth: number): MiniMaxMove {
     const empty = getEmptyCellIndexes(board)
 
+    if (empty.length === boardSize) {
+      return { score: 0, index: 4 }
+    }
     if (checkWin(this.winnerBoard, 'X')) {
       return { score: -1 }
     }
@@ -58,31 +62,31 @@ export default class MediumBot implements Bot {
 
     depth--
 
-    const movePossibles: Array<{ index: number; score: number }> = []
+    const moves: Array<{ index: number; score: number }> = []
 
     for (let i = 0; i < empty.length; i++) {
       const newBoard = JSON.parse(JSON.stringify(board))
       newBoard[Math.floor(empty[i] / 3)][empty[i] % 3] = player
 
       const result = this.miniMax(newBoard, player === 'O' ? 'X' : 'O', depth)
-      movePossibles.push({ index: empty[i], score: result.score })
+      moves.push({ index: empty[i], score: result.score })
     }
 
     let bestMove: number | null = null
 
     if (player === 'X') {
-      let bestScore = -Infinity
-      for (let i = 0; i < movePossibles.length; i++) {
-        bestScore = max(bestScore, movePossibles[i].score)
-        if (movePossibles[i].score === bestScore) {
+      let bestScore: number = -Infinity
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score > bestScore) {
+          bestScore = moves[i].score
           bestMove = i
         }
       }
     } else {
-      let bestScore = Infinity
-      for (let i = 0; i < movePossibles.length; i++) {
-        bestScore = min(bestScore, movePossibles[i].score)
-        if (movePossibles[i].score === bestScore) {
+      let bestScore: number = Infinity
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score < bestScore) {
+          bestScore = moves[i].score
           bestMove = i
         }
       }
@@ -92,6 +96,6 @@ export default class MediumBot implements Bot {
       throw new Error('Best move not found')
     }
 
-    return movePossibles[bestMove]
+    return moves[bestMove]
   }
 }
