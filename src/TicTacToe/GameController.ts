@@ -50,13 +50,11 @@ export const isValidMove = (
   return freeCell && validBoardIndex && validBoard && validPlayer && !gameOver
 }
 
-export const checkTie = (board: Board): boolean => {
+export const checkTie = (winnerBoard: SmallBoard): boolean => {
   for (let i = 0; i < boardRowQuantity; i++) {
     for (let j = 0; j < boardRowQuantity; j++) {
-      for (let k = 0; k < boardRowQuantity; k++) {
-        if (!board[i][j][k]) {
-          return false
-        }
+      if (winnerBoard[i][j] === '') {
+        return false
       }
     }
   }

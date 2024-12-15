@@ -56,7 +56,7 @@ const playMove = (position: Position, player: Sign) => {
 
     if (checkWin(winBoard, currentPlayer.value)) {
       winner.value = currentPlayer.value
-    } else if (checkTie(board)) {
+    } else if (checkTie(winBoard)) {
       isTie.value = true
     } else {
       currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X'
