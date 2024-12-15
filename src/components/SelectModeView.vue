@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { GameType } from '@/TicTacToe/types.ts'
 import { ref } from 'vue'
-import DynamicButton from '@/components/DynamicButton.vue'
-import DynamicLink from '@/components/DynamicLink.vue'
+import DynamicButton from '@/components/shared/DynamicButton.vue'
+import DynamicLink from '@/components/shared/DynamicLink.vue'
 
 const gameType = ref<GameType>()
 </script>

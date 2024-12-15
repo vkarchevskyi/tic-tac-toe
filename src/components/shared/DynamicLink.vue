@@ -80,40 +80,6 @@ defineProps<{ to: string }>()
   transform: scale(1);
 }
 
-.button .dynamic-border {
-  --size_border: calc(100% + 2px);
-
-  overflow: hidden;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  width: var(--size_border);
-  height: var(--size_border);
-  background-color: transparent;
-
-  border-radius: var(--border_radius);
-  z-index: -10;
-}
-
-.button .dynamic-border::before {
-  content: '';
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  transform-origin: left;
-  transform: rotate(0deg);
-
-  width: 100%;
-  height: 2rem;
-  background-color: white;
-
-  mask: linear-gradient(transparent 0%, white 120%);
-  animation: rotate 2s linear infinite;
-}
-
 @keyframes rotate {
   to {
     transform: rotate(360deg);
