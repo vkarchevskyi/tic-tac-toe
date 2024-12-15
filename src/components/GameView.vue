@@ -21,6 +21,7 @@ import { reactive, ref } from 'vue'
 import GameField from '@/components/GameField.vue'
 import EasyBot from '@/TicTacToe/AI/EasyBot.ts'
 import MediumBot from '@/TicTacToe/AI/MediumBot.ts'
+import FillingButton from '@/components/shared/FillingButton.vue'
 
 const props = defineProps<{
   gameType: GameType
@@ -160,10 +161,10 @@ defineExpose({ setData })
       @playMove="playMove"
     ></GameField>
 
-    <div class="">
+    <div class="results">
       <p v-if="winner">{{ winner }} wins!</p>
       <p v-else-if="isTie">It's a tie!</p>
-      <button @click="reset">Reset Game</button>
+      <FillingButton @click.prevent="reset">Reset Game</FillingButton>
     </div>
   </div>
 </template>
@@ -172,6 +173,20 @@ defineExpose({ setData })
 h1 {
   text-align: center;
   margin-bottom: 0.5rem;
+}
+
+.results {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.results p {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ddd;
 }
 
 .current-player {
