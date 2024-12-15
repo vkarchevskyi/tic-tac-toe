@@ -38,7 +38,7 @@ const currentBoard = ref<CurrentBoardIndex>(null)
 let board = reactive(getDefaultBoard())
 let winBoard = reactive(getEmptySmallBoard())
 
-const playMove = async (position: Position, player: Sign): Promise<void> => {
+const playMove = (position: Position, player: Sign) => {
   const validMove = isValidMove(
     position.smallBoard,
     position.row,
@@ -69,22 +69,22 @@ const playMove = async (position: Position, player: Sign): Promise<void> => {
 
     currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
 
-    if (props.singlePlayerType !== null) {
-      setTimeout(makeBotMove, 0);
+    if (currentPlayer.value === 'O' && props.singlePlayerType !== null) {
+      setTimeout(() => {
+        playMove(getBotMove(), 'O')
+      }, 200)
     }
   }
 }
 
-const makeBotMove = async (): Promise<void> => {
+const getBotMove = (): Position => {
   switch (props.singlePlayerType) {
     case SinglePlayerType.Easy:
-      await playMove(new EasyBot(board, winBoard).getMove(currentBoard.value), 'O')
-      break
+      return new EasyBot(board, winBoard).getMove(currentBoard.value)
     case SinglePlayerType.Medium:
-      await playMove(new MediumBot(board, winBoard).getMove(currentBoard.value), 'O')
-      break
+      return new MediumBot(board, winBoard).getMove(currentBoard.value)
     default:
-      break
+      throw new Error('Not implemented yet')
   }
 }
 
