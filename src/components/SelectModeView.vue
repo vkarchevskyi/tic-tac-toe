@@ -15,13 +15,13 @@ const gameType = ref<GameType>()
     </div>
 
     <div class="game-type" v-if="gameType === GameType.SinglePlayer">
-      <DynamicLink :to="'/bot/easy'"> AI Easy</DynamicLink>
-      <DynamicLink :to="'/bot/medium'"> AI Medium</DynamicLink>
+      <DynamicLink :to="'/tic-tac-toe/bot/easy'"> AI Easy</DynamicLink>
+      <DynamicLink :to="'/tic-tac-toe/bot/medium'"> AI Medium</DynamicLink>
     </div>
 
     <div class="game-type" v-if="gameType === GameType.MultiPlayer">
-      <DynamicLink :to="'/local'"> Local</DynamicLink>
-      <DynamicLink :to="'/multiplayer'"> Multiplayer</DynamicLink>
+      <DynamicLink :to="'/tic-tac-toe/local'"> Local</DynamicLink>
+      <DynamicLink :to="'/tic-tac-toe/multiplayer'"> Multiplayer</DynamicLink>
     </div>
   </div>
 </template>
