@@ -21,7 +21,11 @@ type SocketResponse = {
   gameOver: boolean
 }
 
-const socket = io('https://tic-tac-toe-node.vercel.app')
+const socket = io('https://musical-sincere-mako.ngrok-free.app', {
+  extraHeaders: {
+    "ngrok-skip-browser-warning": "69420",
+  }
+})
 
 const personalRoomCode = ref<string>('')
 const inputRoomCode = ref<string>('')
