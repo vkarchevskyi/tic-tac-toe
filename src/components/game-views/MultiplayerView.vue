@@ -11,6 +11,16 @@ import {
 } from '@/TicTacToe/types.ts'
 import GameView from '@/components/GameView.vue'
 
+type SocketResponse = {
+  roomCode: string
+  board: Board
+  currentPlayer: Sign
+  currentBoard: CurrentBoardIndex
+  winner: string | null
+  isTie: boolean
+  gameOver: boolean
+}
+
 // TODO: Change to real domain
 const socket = io('http://localhost:3000')
 
@@ -21,6 +31,14 @@ const gameRoomCode = ref<string | null>(null)
 const player = ref<Sign>()
 
 const gameView = ref<InstanceType<typeof GameView>>()
+
+const handleSocketResponse = (args: SocketResponse) => {
+  if (args.roomCode !== gameRoomCode.value) {
+    throw new Error("Room codes don't match")
+  }
+
+  gameView.value?.setData(args)
+}
 
 socket.on('room-created', (roomCode: string) => {
   personalRoomCode.value = roomCode
@@ -40,24 +58,8 @@ socket.on(
   },
 )
 
-socket.on(
-  'move-made',
-  (args: {
-    roomCode: string
-    board: Board
-    currentPlayer: Sign
-    currentBoard: CurrentBoardIndex
-    winner: string | null
-    isTie: boolean
-    gameOver: boolean
-  }) => {
-    if (args.roomCode !== gameRoomCode.value) {
-      throw new Error("Room codes don't match")
-    }
-
-    gameView.value?.setData(args)
-  },
-)
+socket.on('move-made', handleSocketResponse)
+socket.on('game-restarted', handleSocketResponse)
 
 socket.emit('create-room')
 
@@ -72,6 +74,10 @@ const joinTheRoom = () => {
 const makeMove = (position: Position) => {
   socket.emit('make-move', { roomCode: gameRoomCode.value, position: position })
 }
+
+const restartGame = () => {
+  socket.emit('restart-game', { roomCode: gameRoomCode.value })
+}
 </script>
 
 <template>
@@ -84,6 +90,7 @@ const makeMove = (position: Position) => {
       :room-code="gameRoomCode"
       :socket="socket"
       @makeMove="makeMove"
+      @restartGame="restartGame"
     ></GameView>
   </div>
   <div v-else>

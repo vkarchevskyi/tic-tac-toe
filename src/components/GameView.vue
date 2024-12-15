@@ -32,6 +32,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   changePlayer: []
   makeMove: [position: Position]
+  restartGame: []
 }>()
 
 const winner = ref<string | null>(null)
@@ -52,8 +53,6 @@ const setData = (args: {
   isTie: boolean
   gameOver: boolean
 }) => {
-  console.log(args)
-
   currentBoard.value = args.currentBoard
   board = reactive(args.board)
   currentPlayer.value = args.currentPlayer
@@ -127,6 +126,10 @@ const updateCurrentBoard = (position: Position): void => {
 }
 
 const reset = () => {
+  if (props.multiPlayerType === MultiPlayerType.Online && !gameOver.value) {
+    return
+  }
+
   board = reactive(getDefaultBoard())
   winBoard = reactive(getEmptySmallBoard())
   currentPlayer.value = 'X'
@@ -134,6 +137,8 @@ const reset = () => {
   winner.value = null
   isTie.value = false
   currentBoard.value = null
+
+  emit('restartGame')
 }
 
 defineExpose({ setData })
