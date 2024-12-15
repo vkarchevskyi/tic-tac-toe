@@ -1,10 +1,8 @@
-<script setup lang="ts">
-defineProps<{ withDynamicBorder: boolean }>()
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <button class="button">
-    <span class="dynamic-border" v-show="withDynamicBorder"></span>
+    <span class="dynamic-border"></span>
     <span class="text-button"><slot></slot></span>
   </button>
 </template>
