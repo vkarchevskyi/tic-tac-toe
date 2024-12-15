@@ -28,6 +28,10 @@ const props = defineProps<{
   multiPlayerType?: MultiPlayerType
 }>()
 
+const emit = defineEmits<{
+  changePlayer: []
+}>()
+
 const winner = ref<string | null>(null)
 const isTie = ref<boolean>(false)
 const gameOver = ref<boolean>(false)
@@ -74,6 +78,10 @@ const playMove = (position: Position, player: Sign) => {
       }, 200)
     } else {
       updateCurrentBoard(position)
+    }
+
+    if (props.multiPlayerType === MultiPlayerType.Local) {
+      emit('changePlayer')
     }
   }
 }
