@@ -67,12 +67,13 @@ const playMove = (position: Position, player: Sign) => {
       return
     }
 
-    currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
-
     if (currentPlayer.value === 'O' && props.singlePlayerType !== undefined) {
       setTimeout(() => {
+        updateCurrentBoard(position)
         playMove(getBotMove(), 'O')
       }, 200)
+    } else {
+      updateCurrentBoard(position)
     }
   }
 }
@@ -86,6 +87,10 @@ const getBotMove = (): Position => {
     default:
       throw new Error('Not implemented yet')
   }
+}
+
+const updateCurrentBoard = (position: Position): void => {
+  currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
 }
 
 const reset = () => {
