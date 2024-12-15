@@ -1,4 +1,5 @@
 import { type Board, type CurrentBoardIndex, type Sign, type SmallBoard } from '@/TicTacToe/types'
+import { getEmptyCellIndexes } from '@/TicTacToe/utils.ts'
 
 export const boardSize: number = 9
 export const boardRowQuantity: number = 3
@@ -25,7 +26,11 @@ export const getDefaultBoard = (): Sign[][][] => {
 export const getNextBoardIndex = (board: Board, row: number, col: number) => {
   const index = row * 3 + col
 
-  if (checkSmallBoardWin(board[index], 'X') || checkSmallBoardWin(board[index], 'O')) {
+  if (
+    checkSmallBoardWin(board[index], 'X') ||
+    checkSmallBoardWin(board[index], 'O') ||
+    getEmptyCellIndexes(board[index]).length === 0
+  ) {
     return null
   }
 
@@ -53,7 +58,7 @@ export const isValidMove = (
 export const checkTie = (winnerBoard: SmallBoard): boolean => {
   for (let i = 0; i < boardRowQuantity; i++) {
     for (let j = 0; j < boardRowQuantity; j++) {
-      if (winnerBoard[i][j] === '') {
+      if (winnerBoard[i][j] === '' && getEmptyCellIndexes(winnerBoard).includes(i * 3 + j)) {
         return false
       }
     }

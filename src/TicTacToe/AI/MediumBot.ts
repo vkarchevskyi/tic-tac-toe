@@ -17,7 +17,7 @@ export default class MediumBot implements Bot {
   ) {}
 
   public getMove(currentBoard: CurrentBoardIndex): Position {
-    if (currentBoard === null) {
+    while (currentBoard === null || isNaN(currentBoard)) {
       const freeIndexes: number[] = getEmptyCellIndexes(this.winnerBoard)
       currentBoard = getRandomElement<number>(freeIndexes)
     }
