@@ -21,8 +21,7 @@ type SocketResponse = {
   gameOver: boolean
 }
 
-// TODO: Change to real domain
-const socket = io('http://localhost:3000')
+const socket = io('https://tic-tac-toe-node.vercel.app')
 
 const personalRoomCode = ref<string>('')
 const inputRoomCode = ref<string>('')
