@@ -59,6 +59,7 @@ const setData = (args: {
   winner.value = args.winner
   isTie.value = args.isTie
   gameOver.value = args.gameOver
+  winBoard = reactive(getWinnerBoard(board))
 }
 
 const playMove = (position: Position, player: Sign) => {
@@ -155,6 +156,7 @@ defineExpose({ setData })
       :win-board="winBoard"
       :game-over="gameOver"
       :player="player"
+      :current-player="currentPlayer"
       @playMove="playMove"
     ></GameField>
 
