@@ -22,12 +22,7 @@ type SocketResponse = {
   gameOver: boolean
 }
 
-// https://stackoverflow.com/questions/73017353/how-to-bypass-ngrok-browser-warning
-const socket = io('https://musical-sincere-mako.ngrok-free.app', {
-  extraHeaders: {
-    'ngrok-skip-browser-warning': '69420',
-  },
-})
+const socket = io('http://8.208.16.158')
 
 const personalRoomCode = ref<string>('')
 const inputRoomCode = ref<string>('')
