@@ -6,7 +6,8 @@ import MediumBotView from '@/components/game-views/MediumBotView.vue'
 import LocalGameView from '@/components/game-views/LocalGameView.vue'
 import MultiplayerView from '@/components/game-views/MultiplayerView.vue'
 
-const base: string = ''
+// Use the base path injected by Vite
+const base: string = __BASE_PATH__
 
 const routes: RouteRecordRaw[] = [
   { path: base + '/', component: SelectMode },
