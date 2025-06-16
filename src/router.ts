@@ -6,7 +6,7 @@ import MediumBotView from '@/components/game-views/MediumBotView.vue'
 import LocalGameView from '@/components/game-views/LocalGameView.vue'
 import MultiplayerView from '@/components/game-views/MultiplayerView.vue'
 
-const base: string = '/tic-tac-toe'
+const base: string = ''
 
 const routes: RouteRecordRaw[] = [
   { path: base + '/', component: SelectMode },
