@@ -10,15 +10,15 @@ import MultiplayerView from '@/components/game-views/MultiplayerView.vue'
 const base: string = __BASE_PATH__
 
 const routes: RouteRecordRaw[] = [
-  { path: base + '/', component: SelectMode },
-  { path: base + '/bot/easy', component: EasyBotView },
-  { path: base + '/bot/medium', component: MediumBotView },
-  { path: base + '/local', component: LocalGameView },
-  { path: base + '/multiplayer', component: MultiplayerView },
+  { path: '/', component: SelectMode },
+  { path: '/bot/easy', component: EasyBotView },
+  { path: '/bot/medium', component: MediumBotView },
+  { path: '/local', component: LocalGameView },
+  { path: '/multiplayer', component: MultiplayerView },
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(base),
   routes,
 })
 
