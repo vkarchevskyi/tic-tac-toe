@@ -7,7 +7,8 @@ import type {
   Sign,
   SmallBoard,
 } from '@/TicTacToe/types.ts'
-import { boardSize, checkWin } from '@/TicTacToe/GameController.ts'
+import { boardSize } from '@/TicTacToe/BoardFactory.ts'
+import { checkWin } from '@/TicTacToe/GameRules.ts'
 import { getRandomElement, getEmptyCellIndexes } from '@/TicTacToe/utils.ts'
 
 export default class MediumBot implements Bot {

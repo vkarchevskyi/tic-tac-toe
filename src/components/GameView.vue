@@ -1,27 +1,16 @@
 <script setup lang="ts">
 import {
-  checkTie,
-  checkWin,
-  getDefaultBoard,
-  getEmptySmallBoard,
-  getNextBoardIndex,
-  getWinnerBoard,
-  isValidMove,
-} from '@/TicTacToe/GameController'
-import {
-  type Board,
-  type CurrentBoardIndex,
   GameType,
   MultiPlayerType,
   type Position,
   type Sign,
   SinglePlayerType,
 } from '@/TicTacToe/types'
-import { reactive, ref } from 'vue'
+import { reactive } from 'vue'
 import GameField from '@/components/GameField.vue'
-import EasyBot from '@/TicTacToe/AI/EasyBot.ts'
-import MediumBot from '@/TicTacToe/AI/MediumBot.ts'
 import FillingButton from '@/components/shared/FillingButton.vue'
+import { GameService } from '@/TicTacToe/GameService'
+import type { GameStateData } from '@/TicTacToe/GameState'
 
 const props = defineProps<{
   gameType: GameType
@@ -36,110 +25,59 @@ const emit = defineEmits<{
   restartGame: []
 }>()
 
-const winner = ref<string | null>(null)
-const isTie = ref<boolean>(false)
-const gameOver = ref<boolean>(false)
+// Initialize game service
+const gameService = new GameService(props.singlePlayerType)
 
-const currentPlayer = ref<Sign>('X')
-const currentBoard = ref<CurrentBoardIndex>(null)
+// Reactive game state
+const gameState = reactive(gameService.getGameState())
 
-let board = reactive(getDefaultBoard())
-let winBoard = reactive(getEmptySmallBoard())
+const updateGameState = (newState: Partial<GameStateData>) => {
+  Object.assign(gameState, newState)
+}
 
-const setData = (args: {
-  board: Board
-  currentPlayer: Sign
-  currentBoard: CurrentBoardIndex
-  winner: string | null
-  isTie: boolean
-  gameOver: boolean
-}) => {
-  currentBoard.value = args.currentBoard
-  board = reactive(args.board)
-  currentPlayer.value = args.currentPlayer
-  winner.value = args.winner
-  isTie.value = args.isTie
-  gameOver.value = args.gameOver
-  winBoard = reactive(getWinnerBoard(board))
+const setData = (data: GameStateData) => {
+  gameService.setGameState(data)
+  updateGameState(data)
 }
 
 const playMove = (position: Position, player: Sign) => {
-  const validMove = isValidMove(
-    position.smallBoard,
-    position.row,
-    position.cell,
-    gameOver.value,
-    board,
-    currentBoard.value,
-    currentPlayer.value,
-    player,
-  )
+  const moveSuccessful = gameService.makeMove(position, player)
 
-  if (validMove) {
-    board[position.smallBoard][position.row][position.cell] = currentPlayer.value
-    winBoard = reactive(getWinnerBoard(board))
-
-    if (checkWin(winBoard, currentPlayer.value)) {
-      winner.value = currentPlayer.value
-    } else if (checkTie(winBoard)) {
-      isTie.value = true
-    } else {
-      currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X'
-    }
-
-    if (winner.value !== null || isTie.value) {
-      gameOver.value = true
-    }
-
-    if (props.multiPlayerType === MultiPlayerType.Online) {
-      emit('makeMove', position)
-    }
-
-    if (!gameOver.value) {
-      if (currentPlayer.value === 'O' && props.singlePlayerType !== undefined) {
-        setTimeout(() => {
-          updateCurrentBoard(position)
-          playMove(getBotMove(), 'O')
-        }, 200)
-      } else {
-        updateCurrentBoard(position)
-      }
-
-      if (props.multiPlayerType === MultiPlayerType.Local) {
-        emit('changePlayer')
-      }
-    }
-  }
-}
-
-const getBotMove = (): Position => {
-  switch (props.singlePlayerType) {
-    case SinglePlayerType.Easy:
-      return new EasyBot(board, winBoard).getMove(currentBoard.value)
-    case SinglePlayerType.Medium:
-      return new MediumBot(board, winBoard).getMove(currentBoard.value)
-    default:
-      throw new Error('Not implemented yet')
-  }
-}
-
-const updateCurrentBoard = (position: Position): void => {
-  currentBoard.value = getNextBoardIndex(board, position.row, position.cell)
-}
-
-const reset = () => {
-  if (props.multiPlayerType === MultiPlayerType.Online && !gameOver.value) {
+  if (!moveSuccessful) {
     return
   }
 
-  board = reactive(getDefaultBoard())
-  winBoard = reactive(getEmptySmallBoard())
-  currentPlayer.value = 'X'
-  gameOver.value = false
-  winner.value = null
-  isTie.value = false
-  currentBoard.value = null
+  // Update reactive state
+  updateGameState(gameService.getGameState())
 
+  // Handle multiplayer move emission
+  if (props.multiPlayerType === MultiPlayerType.Online) {
+    emit('makeMove', position)
+  }
+
+  // Handle bot moves
+  if (!gameService.isGameOver() && gameService.isSinglePlayer() && gameState.currentPlayer === 'O') {
+    setTimeout(() => {
+      const botMove = gameService.getBotMove()
+      if (botMove) {
+        playMove(botMove, 'O')
+      }
+    }, 200)
+  }
+
+  // Handle local multiplayer player change
+  if (props.multiPlayerType === MultiPlayerType.Local && !gameService.isGameOver()) {
+    emit('changePlayer')
+  }
+}
+
+const reset = () => {
+  if (props.multiPlayerType === MultiPlayerType.Online && !gameState.gameOver) {
+    return
+  }
+
+  gameService.reset()
+  updateGameState(gameService.getGameState())
   emit('restartGame')
 }
 
@@ -149,25 +87,17 @@ defineExpose({ setData })
 <template>
   <div>
     <p class="current-player">
-      Current Player: <span class=""> {{ currentPlayer }} </span>
+      Current Player: <span class=""> {{ gameState.currentPlayer }} </span>
     </p>
-    <GameField
-      :board="board"
-      :current-board="currentBoard"
-      :win-board="winBoard"
-      :game-over="gameOver"
-      :player="player"
-      :current-player="currentPlayer"
-      @playMove="playMove"
-    ></GameField>
+    <GameField :board="gameState.board" :current-board="gameState.currentBoard" :win-board="gameState.winBoard"
+      :game-over="gameState.gameOver" :player="player" :current-player="gameState.currentPlayer" @playMove="playMove">
+    </GameField>
 
     <div class="results">
-      <p v-if="winner">{{ winner }} wins!</p>
-      <p v-else-if="isTie">It's a tie!</p>
-      <FillingButton
-        @click.prevent="reset"
-        v-show="props.multiPlayerType !== MultiPlayerType.Online || gameOver"
-      >
+      <p v-if="gameState.winner">{{ gameState.winner }} wins!</p>
+      <p v-else-if="gameState.isTie">It's a tie!</p>
+      <FillingButton @click.prevent="reset"
+        v-show="props.multiPlayerType !== MultiPlayerType.Online || gameState.gameOver">
         Reset Game
       </FillingButton>
     </div>

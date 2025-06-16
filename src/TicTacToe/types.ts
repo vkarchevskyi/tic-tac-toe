@@ -8,16 +8,16 @@ export type Position = { smallBoard: number; row: number; cell: number }
 export type MiniMaxMove = { index?: number; score: number }
 
 export enum GameType {
-  SinglePlayer,
-  MultiPlayer,
+  SinglePlayer = 1,
+  MultiPlayer = 2,
 }
 
 export enum SinglePlayerType {
-  Easy,
-  Medium,
+  Easy = 1,
+  Medium = 2,
 }
 
 export enum MultiPlayerType {
-  Local,
-  Online,
+  Local = 1,
+  Online = 2,
 }

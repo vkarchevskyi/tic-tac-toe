@@ -2,28 +2,21 @@
 import { io } from 'socket.io-client'
 import { ref } from 'vue'
 import {
-  type Board,
-  type CurrentBoardIndex,
   GameType,
   MultiPlayerType,
   type Position,
   type Sign,
-} from '@/TicTacToe/types.ts'
+} from '@/TicTacToe/types'
+import type { GameStateData } from '@/TicTacToe/GameState'
 import GameView from '@/components/GameView.vue'
 import FillingButton from '@/components/shared/FillingButton.vue'
 
-type SocketResponse = {
+type SocketResponse = GameStateData & {
   roomCode: string
-  board: Board
-  currentPlayer: Sign
-  currentBoard: CurrentBoardIndex
-  winner: string | null
-  isTie: boolean
-  gameOver: boolean
 }
 
 // https://stackoverflow.com/questions/73017353/how-to-bypass-ngrok-browser-warning
-const socket = io('https://kit-rapid-subtly.ngrok-free.app', {
+const socket = io('http://localhost:3000', {
   extraHeaders: {
     'ngrok-skip-browser-warning': '12345',
   },
@@ -53,11 +46,8 @@ socket.on(
   'start-game',
   (args: {
     roomCode: string
-    board: Board
-    currentPlayer: Sign
-    currentBoard: CurrentBoardIndex
     player: Sign
-  }) => {
+  } & GameStateData) => {
     gameRoomCode.value = args.roomCode
     player.value = args.player
   },
@@ -87,16 +77,9 @@ const restartGame = () => {
 
 <template>
   <div v-if="gameRoomCode && player">
-    <GameView
-      ref="gameView"
-      :game-type="GameType.MultiPlayer"
-      :player="player"
-      :multi-player-type="MultiPlayerType.Online"
-      :room-code="gameRoomCode"
-      :socket="socket"
-      @makeMove="makeMove"
-      @restartGame="restartGame"
-    ></GameView>
+    <GameView ref="gameView" :game-type="GameType.MultiPlayer" :player="player"
+      :multi-player-type="MultiPlayerType.Online" :room-code="gameRoomCode" :socket="socket" @makeMove="makeMove"
+      @restartGame="restartGame"></GameView>
   </div>
   <div v-else>
     <p>

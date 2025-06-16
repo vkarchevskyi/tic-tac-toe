@@ -1,5 +1,5 @@
 import type { CurrentBoardIndex, Sign, SmallBoard } from '@/TicTacToe/types.ts'
-import { boardRowQuantity } from '@/TicTacToe/GameController.ts'
+import { boardRowQuantity } from '@/TicTacToe/GameRules.ts'
 
 export const getRandomElement = <T>(array: Array<T>): T => {
   return array[(array.length * Math.random()) | 0]
